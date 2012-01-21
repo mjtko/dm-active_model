@@ -1,31 +1,34 @@
 require 'pathname'
 
-source 'http://rubygems.org'
+source :rubygems
 
-SOURCE       = ENV.fetch('SOURCE', :git).to_sym
-REPO_POSTFIX = SOURCE == :path ? ''                                : '.git'
-DATAMAPPER   = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://github.com/datamapper'
-DM_VERSION   = '~> 1.1.0'
+gemspec
 
-gem 'activemodel', '~> 3.1.0.rc4', :require => nil
-gem 'dm-core',     DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}"
+SOURCE         = ENV.fetch('SOURCE', :git).to_sym
+REPO_POSTFIX   = SOURCE == :path ? ''                                : '.git'
+DATAMAPPER     = SOURCE == :path ? Pathname(__FILE__).dirname.parent : 'http://github.com/datamapper'
+DM_VERSION     = '~> 1.3.0.beta'
+CURRENT_BRANCH = ENV.fetch('GIT_BRANCH', 'master')
+RAILS_VERSION  = '~> 3.1.0'
+
+gem 'dm-core',     DM_VERSION,
+  SOURCE  => "#{DATAMAPPER}/dm-core#{REPO_POSTFIX}",
+  :branch => CURRENT_BRANCH
+
+gem 'activemodel', RAILS_VERSION, :require => nil
 
 group :development do
-
-  gem 'dm-validations', DM_VERSION, SOURCE => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}"
-  gem 'jeweler',        '~> 1.5.2'
-  gem 'rake',           '~> 0.8.7'
-  gem 'rspec',          '~> 1.3.1'
-  gem 'test-unit',      '= 1.2.3'
-
+  gem 'dm-validations', DM_VERSION,
+    SOURCE  => "#{DATAMAPPER}/dm-validations#{REPO_POSTFIX}",
+    :branch => CURRENT_BRANCH
 end
 
 platforms :mri_18 do
   group :quality do
 
-    gem 'rcov',      '~> 0.9.9'
-    gem 'yard',      '~> 0.6'
-    gem 'yardstick', '~> 0.2'
+    gem 'rcov',      '~> 0.9.10'
+    gem 'yard',      '~> 0.7.2'
+    gem 'yardstick', '~> 0.4'
 
   end
 end
@@ -36,7 +39,9 @@ group :datamapper do
   plugins = plugins.to_s.tr(',', ' ').split.uniq
 
   plugins.each do |plugin|
-    gem plugin, DM_VERSION, SOURCE => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}"
+    gem plugin, DM_VERSION,
+      SOURCE  => "#{DATAMAPPER}/#{plugin}#{REPO_POSTFIX}",
+      :branch => CURRENT_BRANCH
   end
 
 end
